@@ -27,4 +27,13 @@ public class ResourceUtils {
     public static @Nullable Item getItemByLocation(@NotNull ResourceLocation location) {
         return isItemValid(location) ? ForgeRegistries.ITEMS.getValue(location) : null;
     }
+
+    /**
+     * Get a ResourceLocation from an Item.
+     * @param item A valid Item.
+     * @return A valid ResourceLocation or null if item is invalid.
+     */
+    public static @Nullable ResourceLocation getResourcebyItem(@NotNull Item item) {
+        return ForgeRegistries.ITEMS.getKey(item);
+    }
 }

@@ -18,14 +18,22 @@ public class RarityUtils {
     private static final @NotNull TextColor WHITE_COLOR = Objects.requireNonNull(TextColor.fromLegacyFormat(ChatFormatting.WHITE));
 
     /**
-     * Get rarity by cache, if not found, process it.
-     * This avoids calling getStyleModifier().apply() each time/tick.
+     * Get Style by ItemStack. (Cached)
      * @param stack A valid ItemStack.
-     * @return A valid style.
+     * @return A valid Style.
      */
     public static @NotNull Style getStyle(@NotNull ItemStack stack) {
         if (stack.isEmpty()) return Style.EMPTY;
         return STYLE_MAP.computeIfAbsent(stack.getRarity(), e -> e.getStyleModifier().apply(Style.EMPTY));
+    }
+
+    /**
+     * Get Style by Rarity. (Cached)
+     * @param rarity A valid Rarity.
+     * @return A valid Style.
+     */
+    public static @NotNull Style getStyleByRarity(@NotNull Rarity rarity) {
+        return STYLE_MAP.computeIfAbsent(rarity, e -> e.getStyleModifier().apply(Style.EMPTY));
     }
 
     /**

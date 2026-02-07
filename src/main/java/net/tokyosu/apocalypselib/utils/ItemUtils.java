@@ -32,14 +32,14 @@ public final class ItemUtils {
 
         // Get and check if resource location is valid.
         var resourceLocation = ResourceLocation.tryParse(resourceName);
+        if (resourceLocation == null) return ItemStack.EMPTY;
+
         var item = ResourceUtils.getItemByLocation(resourceLocation);
         // Check if the item is null.
         if (item == null) return ItemStack.EMPTY;
 
         // Now return the ItemStack (no nbt).
-        var stack = new ItemStack(item);
-        stack.setCount(count);
-        return stack;
+        return createStackFromItem(item, count);
     }
 
     /**
@@ -65,28 +65,34 @@ public final class ItemUtils {
 
         // Get and check if resource location is valid.
         var resourceLocation = ResourceLocation.tryParse(resourceName);
-        var item = ResourceUtils.getItemByLocation(resourceLocation);
-        // Check if the item is null.
-        if (item == null) return ItemStack.EMPTY;
+        if (resourceLocation == null) return ItemStack.EMPTY;
 
-        // For now, parse nbt into CompoundTag else return.
-        CompoundTag nbtTag = TagUtils.stringToNBT(nbt);
-        if (nbtTag == null) return ItemStack.EMPTY;
+        var item = ResourceUtils.getItemByLocation(resourceLocation);
+        if (item == null) return ItemStack.EMPTY; // Check if the item is null.
 
         // Now we can create the ItemStack.
-        var stack = new ItemStack(item);
-        stack.setTag(nbtTag);
-        stack.setCount(count);
-        return stack;
+        return createStackFromItemNBT(item, nbt, count);
     }
 
     /**
      * Create a ItemStack from an Item.
      * @param item A valid item.
-     * @return A valid ItemStack or ItemStack.EMPTY.
+     * @return A valid ItemStack.
      */
     public static @NotNull ItemStack createStackFromItem(@NotNull Item item) {
-        return new ItemStack(item);
+        return createStackFromItem(item, 1);
+    }
+
+    /**
+     * Create a ItemStack from an Item.
+     * @param item A valid item.
+     * @param count Stack count.
+     * @return A valid ItemStack.
+     */
+    public static @NotNull ItemStack createStackFromItem(@NotNull Item item, int count) {
+        var stack = new ItemStack(item);
+        stack.setCount(count);
+        return stack;
     }
 
     /**
@@ -96,6 +102,17 @@ public final class ItemUtils {
      * @return A valid ItemStack or ItemStack.EMPTY.
      */
     public static @NotNull ItemStack createStackFromItemNBT(@NotNull Item item, @NotNull String nbt) {
+        return createStackFromItemNBT(item, nbt, 1);
+    }
+
+    /**
+     * Create a ItemStack from an Item and assign a nbt from string.
+     * @param item A valid Item.
+     * @param nbt A valid nbt tag.
+     * @param count Stack count.
+     * @return A valid ItemStack or ItemStack.EMPTY.
+     */
+    public static @NotNull ItemStack createStackFromItemNBT(@NotNull Item item, @NotNull String nbt, int count) {
         // For now, parse nbt into CompoundTag else return.
         CompoundTag nbtTag = TagUtils.stringToNBT(nbt);
         if (nbtTag == null) return ItemStack.EMPTY;
@@ -103,6 +120,7 @@ public final class ItemUtils {
         // Now create the stack and assign the nbt tag.
         var stack = new ItemStack(item);
         stack.setTag(nbtTag);
+        stack.setCount(count);
         return stack;
     }
 
