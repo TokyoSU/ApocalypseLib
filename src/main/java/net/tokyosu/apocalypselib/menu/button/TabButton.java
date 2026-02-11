@@ -123,7 +123,7 @@ public class TabButton extends ImageButton {
         /**
          * Set the position of the tab button.
          */
-        public @NotNull TabBuilder position(int x, int y) {
+        public @NotNull TabBuilder pos(int x, int y) {
             this.x = x;
             this.y = y;
             return this;

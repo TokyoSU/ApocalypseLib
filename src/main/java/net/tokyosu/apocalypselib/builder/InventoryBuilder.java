@@ -4,6 +4,7 @@ import com.mojang.math.Axis;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -210,7 +211,7 @@ public class InventoryBuilder {
      * @return A valid hover builder.
      */
     public @NotNull HoverButton.HoverBuilder createHoveredButton(int x, int y) {
-        return new HoverButton.HoverBuilder().position(this.posX + x, this.posY + y);
+        return new HoverButton.HoverBuilder().pos(this.posX + x, this.posY + y);
     }
 
     /**
@@ -220,6 +221,18 @@ public class InventoryBuilder {
      * @return A valid tab builder.
      */
     public @NotNull TabButton.TabBuilder createTabButton(int x, int y) {
-        return new TabButton.TabBuilder().position(this.posX + x, this.posY + y);
+        return new TabButton.TabBuilder().pos(this.posX + x, this.posY + y);
+    }
+
+    /**
+     * Create a basic minecraft button at relative position from the gui.
+     * @param x Starting X position.
+     * @param y Starting Y position.
+     * @param message Name or message in the button.
+     * @param onPress A callback when the button is pressed.
+     * @return A valid button builder.
+     */
+    public @NotNull Button.Builder createButton(int x, int y, @NotNull Component message, @NotNull Button.OnPress onPress) {
+        return new Button.Builder(message, onPress).pos(this.posX + x, this.posY + y);
     }
 }

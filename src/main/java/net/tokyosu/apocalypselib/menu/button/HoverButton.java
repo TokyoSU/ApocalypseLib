@@ -114,7 +114,7 @@ public class HoverButton extends ImageButton {
         /**
          * Set the position of the hover button.
          */
-        public @NotNull HoverBuilder position(int x, int y) {
+        public @NotNull HoverBuilder pos(int x, int y) {
             this.x = x;
             this.y = y;
             return this;
