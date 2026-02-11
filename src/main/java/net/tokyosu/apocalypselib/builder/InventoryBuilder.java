@@ -176,21 +176,35 @@ public class InventoryBuilder {
 
     /**
      * Draw an ItemStack tooltip if mouse overlap the slot.
-     * @param stack A valid ItemStack.
-     * @param x Starting X position for the icon.
-     * @param y Starting Y position for the icon.
+     * @param x Starting X position.
+     * @param y Starting Y position.
      * @param text A valid text for the tooltip.
      * @param pMouseX Mouse position X.
      * @param pMouseY Mouse position Y.
      */
-    public void drawTooltip(@NotNull ItemStack stack, int x, int y, @NotNull Component text, int pMouseX, int pMouseY) {
+    public void drawTooltip(int x, int y, @NotNull Component text, int pMouseX, int pMouseY) {
         if (this.pFont != null && HudUtils.isMouseHoverRect(x, y, pMouseX, pMouseY)) {
             pGui.renderTooltip(this.pFont, text, pMouseX, pMouseY);
         }
     }
 
     /**
-     * Draw an ItemStack icon, and if mouse overlap the slot: draw this tooltip.
+     * Draw an ItemStack tooltip if mouse overlap, use size to define the border.
+     * @param x Starting X position.
+     * @param y Starting Y position.
+     * @param text A valid text for the tooltip.
+     * @param pMouseX Mouse position X.
+     * @param pMouseY Mouse position Y.
+     * @param size Size of the checked rectangle, usually 16.
+     */
+    public void drawTooltip(int x, int y, @NotNull Component text, int pMouseX, int pMouseY, int size) {
+        if (this.pFont != null && HudUtils.isMouseHoverRect(x, y, pMouseX, pMouseY, size)) {
+            pGui.renderTooltip(this.pFont, text, pMouseX, pMouseY);
+        }
+    }
+
+    /**
+     * Draw an ItemStack icon, and if mouse overlap the slot then draw the tooltip.
      * @param stack A valid ItemStack.
      * @param x Starting X position for the icon.
      * @param y Starting Y position for the icon.
@@ -205,23 +219,49 @@ public class InventoryBuilder {
     }
 
     /**
+     * Draw an ItemStack icon, and if mouse overlap the slot then draw the tooltip.
+     * @param stack A valid ItemStack.
+     * @param x Starting X position for the icon.
+     * @param y Starting Y position for the icon.
+     * @param pMouseX Mouse position X.
+     * @param pMouseY Mouse position Y.
+     * @param size Size of the checked rectangle, usually 16.
+     */
+    public void drawIconWithTooltip(@NotNull ItemStack stack, int x, int y, int pMouseX, int pMouseY, int size) {
+        this.drawIcon(stack, x, y);
+        if (this.pFont != null && HudUtils.isMouseHoverRect(x, y, pMouseX, pMouseY, size)) {
+            pGui.renderTooltip(this.pFont, Screen.getTooltipFromItem(Minecraft.getInstance(), stack), stack.getTooltipImage(), pMouseX, pMouseY);
+        }
+    }
+
+    /**
      * Create a relative hover button (still need to be build()).
      * @param x Starting X position.
      * @param y Starting Y position.
+     * @param integratedTexture Does the texture is used by the GUI too, use false if the hover texture is separated !
      * @return A valid hover builder.
      */
-    public @NotNull HoverButton.HoverBuilder createHoveredButton(int x, int y) {
-        return new HoverButton.HoverBuilder().pos(this.posX + x, this.posY + y);
+    public @NotNull HoverButton.HoverBuilder createHoveredButton(int x, int y, boolean integratedTexture) {
+        var builder = HoverButton.builder(integratedTexture);
+        builder.pos(this.posX + x, this.posY + y);
+        if (integratedTexture)
+            builder.sizeGui(this.textureWidth, this.textureHeight);
+        return builder;
     }
 
     /**
      * Create a relative tab button (still need to be build()).
      * @param x Starting X position.
      * @param y Starting Y position.
+     * @param integratedTexture Does the texture is used by the GUI too, use false if the tab texture is separated !
      * @return A valid tab builder.
      */
-    public @NotNull TabButton.TabBuilder createTabButton(int x, int y) {
-        return new TabButton.TabBuilder().pos(this.posX + x, this.posY + y);
+    public @NotNull TabButton.TabBuilder createTabButton(int x, int y, boolean integratedTexture) {
+        var builder = TabButton.builder(integratedTexture);
+        builder.pos(this.posX + x, this.posY + y);
+        if (integratedTexture)
+            builder.sizeGui(this.textureWidth, this.textureHeight);
+        return builder;
     }
 
     /**
@@ -233,6 +273,6 @@ public class InventoryBuilder {
      * @return A valid button builder.
      */
     public @NotNull Button.Builder createButton(int x, int y, @NotNull Component message, @NotNull Button.OnPress onPress) {
-        return new Button.Builder(message, onPress).pos(this.posX + x, this.posY + y);
+        return Button.builder(message, onPress).pos(this.posX + x, this.posY + y);
     }
 }

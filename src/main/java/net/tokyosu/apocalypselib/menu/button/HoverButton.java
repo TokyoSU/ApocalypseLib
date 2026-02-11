@@ -78,10 +78,9 @@ public class HoverButton extends ImageButton {
 
     @Override
     public void renderTexture(@NotNull GuiGraphics pGraphics, @NotNull ResourceLocation texture, int x, int y, int textureX, int textureY, int textureYDiff, int width, int height, int textureWidth, int textureHeight) {
-        if (this.active && this.isHovered())
-            super.renderTexture(pGraphics, hoveredTexture != null ? hoveredTexture : normalTexture, x, y, hoveredTextureRect.getX(), hoveredTextureRect.getY(), textureYDiff, width, height, hoveredTextureRect.getWidth(), hoveredTextureRect.getHeight());
-        else
-            super.renderTexture(pGraphics, normalTexture, x, y, normalTextureRect.getX(), normalTextureRect.getY(), textureYDiff, width, height, normalTextureRect.getWidth(), normalTextureRect.getHeight());
+        final var resource = (this.hoveredTexture != null && this.isHovered()) ? this.hoveredTexture : this.normalTexture;
+        final var rectangle = (this.hoveredTextureRect != null && this.isHovered()) ? this.hoveredTextureRect : this.normalTextureRect;
+        super.renderTexture(pGraphics, resource, x, y, rectangle.getX(), rectangle.getY(), textureYDiff, width, height, rectangle.getWidth(), rectangle.getHeight());
     }
 
     @OnlyIn(Dist.CLIENT)
@@ -91,9 +90,10 @@ public class HoverButton extends ImageButton {
 
     /**
      * Created a hover button using factory.
+     * @param integratedTexture Does the texture is used by the GUI too, use false if the hover texture is separated !
      */
-    public static @NotNull HoverBuilder builder() {
-        return new HoverBuilder();
+    public static @NotNull HoverBuilder builder(boolean integratedTexture) {
+        return new HoverBuilder(integratedTexture);
     }
 
     /**
@@ -108,8 +108,17 @@ public class HoverButton extends ImageButton {
         private @Nullable HoverButton.OnPress hoverPressed = null;
         private @Nullable Button.OnPress buttonPressed = null;
         private int x = 0, y = 0, width = 0, height = 0, textureYOffset = 0;
+        private int guiWidth = 0, guiHeight = 0;
+        private boolean isIntegratedByGUI = false;
+        private boolean hasGuiSizeBeenSet = false;
 
-        public HoverBuilder() {}
+        /**
+         * Constructor of HoverBuilder.
+         * @param integratedTexture Does the texture is used by the GUI too, use false if the hover texture is separated !
+         */
+        public HoverBuilder(boolean integratedTexture) {
+            this.isIntegratedByGUI = integratedTexture;
+        }
 
         /**
          * Set the position of the hover button.
@@ -126,6 +135,18 @@ public class HoverButton extends ImageButton {
         public @NotNull HoverBuilder size(int width, int height) {
             this.width = width;
             this.height = height;
+            return this;
+        }
+
+        /**
+         * Dont call it, its set by MenuBase !
+         * @param width Texture width of the GUI.
+         * @param height Texture height of the GUI.
+         */
+        public @NotNull HoverBuilder sizeGui(int width, int height) {
+            this.guiWidth = width;
+            this.guiHeight = height;
+            this.hasGuiSizeBeenSet = true;
             return this;
         }
 
@@ -167,6 +188,10 @@ public class HoverButton extends ImageButton {
         public @NotNull HoverBuilder bounds(@NotNull Rect2i normal) {
             this.normalTextureRect = normal;
             this.hoveredTextureRect = null;
+            if (this.isIntegratedByGUI && this.hasGuiSizeBeenSet) {
+                this.normalTextureRect.setWidth(this.guiWidth);
+                this.normalTextureRect.setHeight(this.guiHeight);
+            }
             return this;
         }
 
@@ -178,6 +203,12 @@ public class HoverButton extends ImageButton {
         public @NotNull HoverBuilder bounds(@NotNull Rect2i normal, @NotNull Rect2i selected) {
             this.normalTextureRect = normal;
             this.hoveredTextureRect = selected;
+            if (this.isIntegratedByGUI && this.hasGuiSizeBeenSet) {
+                this.normalTextureRect.setWidth(this.guiWidth);
+                this.normalTextureRect.setHeight(this.guiHeight);
+                this.hoveredTextureRect.setWidth(this.guiWidth);
+                this.hoveredTextureRect.setHeight(this.guiHeight);
+            }
             return this;
         }
 

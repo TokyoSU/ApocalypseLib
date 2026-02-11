@@ -87,10 +87,9 @@ public class TabButton extends ImageButton {
 
     @Override
     public void renderTexture(@NotNull GuiGraphics pGraphics, @NotNull ResourceLocation texture, int x, int y, int textureX, int textureY, int textureYDiff, int width, int height, int textureWidth, int textureHeight) {
-        if (this.active && this.isSelected)
-            super.renderTexture(pGraphics, selectedTexture != null ? selectedTexture : normalTexture, x, y, selectedTextureRect.getX(), selectedTextureRect.getY(), textureYDiff, width, height, selectedTextureRect.getWidth(), selectedTextureRect.getHeight());
-        else
-            super.renderTexture(pGraphics, normalTexture, x, y, normalTextureRect.getX(), normalTextureRect.getY(), textureYDiff, width, height, normalTextureRect.getWidth(), normalTextureRect.getHeight());
+        final var resource = (this.selectedTexture != null && this.isSelected) ? this.selectedTexture : this.normalTexture;
+        final var rectangle = (this.selectedTextureRect != null && this.isSelected) ? this.selectedTextureRect : this.normalTextureRect;
+        super.renderTexture(pGraphics, resource, x, y, rectangle.getX(), rectangle.getY(), textureYDiff, width, height, rectangle.getWidth(), rectangle.getHeight());
     }
 
     @OnlyIn(Dist.CLIENT)
@@ -100,9 +99,10 @@ public class TabButton extends ImageButton {
 
     /**
      * Created a tab button using factory.
+     * @param integratedTexture Does the texture is used by the GUI too, use false if the tab texture is separated !
      */
-    public static @NotNull TabBuilder builder() {
-        return new TabBuilder();
+    public static @NotNull TabBuilder builder(boolean integratedTexture) {
+        return new TabBuilder(integratedTexture);
     }
 
     /**
@@ -117,8 +117,17 @@ public class TabButton extends ImageButton {
         private @Nullable TabButton.OnTabPress tabPressed = null;
         private @Nullable Button.OnPress buttonPressed = null;
         private int x = 0, y = 0, width = 0, height = 0, textureYOffset = 0;
+        private int guiWidth = 0, guiHeight = 0;
+        private boolean isIntegratedByGUI = false;
+        private boolean hasGuiSizeBeenSet = false;
 
-        public TabBuilder() {}
+        /**
+         * Constructor of TabBuilder.
+         * @param integratedTexture Does the texture is used by the GUI too, use false if the tab texture is separated !
+         */
+        public TabBuilder(boolean integratedTexture) {
+            this.isIntegratedByGUI = integratedTexture;
+        }
 
         /**
          * Set the position of the tab button.
@@ -135,6 +144,18 @@ public class TabButton extends ImageButton {
         public @NotNull TabBuilder size(int width, int height) {
             this.width = width;
             this.height = height;
+            return this;
+        }
+
+        /**
+         * Dont call it, its set by MenuBase !
+         * @param width Texture width of the GUI.
+         * @param height Texture height of the GUI.
+         */
+        public @NotNull TabBuilder sizeGui(int width, int height) {
+            this.guiWidth = width;
+            this.guiHeight = height;
+            this.hasGuiSizeBeenSet = true;
             return this;
         }
 
@@ -176,6 +197,10 @@ public class TabButton extends ImageButton {
         public @NotNull TabBuilder bounds(@NotNull Rect2i normal) {
             this.normalTextureRect = normal;
             this.selectedTextureRect = null;
+            if (this.isIntegratedByGUI && this.hasGuiSizeBeenSet) {
+                this.normalTextureRect.setWidth(this.guiWidth);
+                this.normalTextureRect.setHeight(this.guiHeight);
+            }
             return this;
         }
 
@@ -187,6 +212,12 @@ public class TabButton extends ImageButton {
         public @NotNull TabBuilder bounds(@NotNull Rect2i normal, @NotNull Rect2i selected) {
             this.normalTextureRect = normal;
             this.selectedTextureRect = selected;
+            if (this.isIntegratedByGUI && this.hasGuiSizeBeenSet) {
+                this.normalTextureRect.setWidth(this.guiWidth);
+                this.normalTextureRect.setHeight(this.guiHeight);
+                this.selectedTextureRect.setWidth(this.guiWidth);
+                this.selectedTextureRect.setHeight(this.guiHeight);
+            }
             return this;
         }
 
