@@ -9,6 +9,8 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.item.ItemStack;
+import net.tokyosu.apocalypselib.menu.button.HoverButton;
+import net.tokyosu.apocalypselib.menu.button.TabButton;
 import net.tokyosu.apocalypselib.utils.HudUtils;
 import org.jetbrains.annotations.NotNull;
 
@@ -199,5 +201,25 @@ public class InventoryBuilder {
         if (this.pFont != null && HudUtils.isMouseHoverRect(x, y, pMouseX, pMouseY)) {
             pGui.renderTooltip(this.pFont, Screen.getTooltipFromItem(Minecraft.getInstance(), stack), stack.getTooltipImage(), pMouseX, pMouseY);
         }
+    }
+
+    /**
+     * Create a relative hover button (still need to be build()).
+     * @param x Starting X position.
+     * @param y Starting Y position.
+     * @return A valid hover builder.
+     */
+    public @NotNull HoverButton.HoverBuilder createHoveredButton(int x, int y) {
+        return new HoverButton.HoverBuilder().position(this.posX + x, this.posY + y);
+    }
+
+    /**
+     * Create a relative tab button (still need to be build()).
+     * @param x Starting X position.
+     * @param y Starting Y position.
+     * @return A valid tab builder.
+     */
+    public @NotNull TabButton.TabBuilder createTabButton(int x, int y) {
+        return new TabButton.TabBuilder().position(this.posX + x, this.posY + y);
     }
 }

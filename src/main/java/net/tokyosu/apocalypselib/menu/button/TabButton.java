@@ -1,17 +1,20 @@
 package net.tokyosu.apocalypselib.menu.button;
 
+import net.minecraft.ResourceLocationException;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.ImageButton;
-import net.minecraft.client.gui.components.tabs.Tab;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.packs.resources.Resource;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+/**
+ * Define a tab button that can change it's state from normal to selected or vice versa.
+ */
 public class TabButton extends ImageButton {
     private final ResourceLocation normalTexture;
     private final ResourceLocation selectedTexture;
@@ -20,35 +23,35 @@ public class TabButton extends ImageButton {
     private Rect2i selectedTextureRect;
     private boolean isSelected = false;
 
-    public TabButton(int x, int y, int width, int height, int textureX, int textureY, @NotNull ResourceLocation texture, @NotNull OnPress onPress) {
+    public TabButton(int x, int y, int width, int height, int textureX, int textureY, @NotNull ResourceLocation texture, @NotNull Button.OnPress onPress) {
         super(x, y, width, height, textureX, textureY, texture, onPress);
         this.normalTexture = texture;
         this.selectedTexture = null;
         this.tabPressed = null;
     }
 
-    public TabButton(int x, int y, int width, int height, int textureX, int textureY, int textureYOffset, @NotNull ResourceLocation texture, @NotNull OnPress onPress) {
+    public TabButton(int x, int y, int width, int height, int textureX, int textureY, int textureYOffset, @NotNull ResourceLocation texture, @NotNull Button.OnPress onPress) {
         super(x, y, width, height, textureX, textureY, textureYOffset, texture, onPress);
         this.normalTexture = texture;
         this.selectedTexture = null;
         this.tabPressed = null;
     }
 
-    public TabButton(int x, int y, int width, int height, int textureX, int textureY, int textureYOffset, @NotNull ResourceLocation texture, int textureWidth, int textureHeight, @NotNull OnPress onPress) {
-        super(x, y, width, height, textureX, textureY, textureYOffset, texture, textureWidth, textureHeight, onPress);
+    public TabButton(int x, int y, int width, int height, int textureYOffset, @NotNull ResourceLocation texture, @NotNull Rect2i textureRect, @NotNull Button.OnPress onPress) {
+        super(x, y, width, height, textureRect.getX(), textureRect.getY(), textureYOffset, texture, textureRect.getWidth(), textureRect.getHeight(), onPress);
         this.normalTexture = texture;
         this.selectedTexture = null;
         this.tabPressed = null;
     }
 
-    public TabButton(int x, int y, int width, int height, int textureX, int textureY, int textureYOffset, @NotNull ResourceLocation texture, int textureWidth, int textureHeight, @NotNull OnPress onPress, @NotNull Component message) {
-        super(x, y, width, height, textureX, textureY, textureYOffset, texture, textureWidth, textureHeight, onPress, message);
+    public TabButton(int x, int y, int width, int height, int textureYOffset, @NotNull ResourceLocation texture, @NotNull Rect2i textureRect, @NotNull Button.OnPress onPress, @NotNull Component message) {
+        super(x, y, width, height, textureRect.getWidth(), textureRect.getY(), textureYOffset, texture, textureRect.getWidth(), textureRect.getHeight(), onPress, message);
         this.normalTexture = texture;
         this.selectedTexture = null;
         this.tabPressed = null;
     }
 
-    public TabButton(int x, int y, int width, int height, int textureYOffset, @NotNull ResourceLocation texture, @NotNull Rect2i normalTextureRect, @NotNull Rect2i selectedTextureRect, @NotNull OnTabPress onTabPress, @NotNull Component message) {
+    public TabButton(int x, int y, int width, int height, int textureYOffset, @NotNull ResourceLocation texture, @NotNull Rect2i normalTextureRect, @NotNull Rect2i selectedTextureRect, @NotNull TabButton.OnTabPress onTabPress, @NotNull Component message) {
         super(x, y, width, height, normalTextureRect.getX(), normalTextureRect.getY(), textureYOffset, texture, normalTextureRect.getWidth(), normalTextureRect.getHeight(), (button) -> {}, message);
         this.normalTexture = texture;
         this.normalTextureRect = normalTextureRect;
@@ -75,8 +78,10 @@ public class TabButton extends ImageButton {
         }
     }
 
-    /// Reset selection of the tab, now able to call onPress() again !
-    public void reset() {
+    /**
+     * Reset tab to unselected
+     */
+    public void unselect() {
         this.isSelected = false;
     }
 
@@ -96,7 +101,7 @@ public class TabButton extends ImageButton {
     /**
      * Created a tab button using factory.
      */
-    public static TabBuilder builder() {
+    public static @NotNull TabBuilder builder() {
         return new TabBuilder();
     }
 
@@ -107,17 +112,18 @@ public class TabButton extends ImageButton {
         private @Nullable ResourceLocation normalTexture = null;
         private @Nullable ResourceLocation selectedTexture = null;
         private @Nullable Component message = null;
-        private OnTabPress tabPressed;
-        private Rect2i normalTextureRect;
-        private Rect2i selectedTextureRect;
-        private int x, y, width, height, textureYOffset;
+        private @Nullable Rect2i normalTextureRect = null;
+        private @Nullable Rect2i selectedTextureRect = null;
+        private @Nullable TabButton.OnTabPress tabPressed = null;
+        private @Nullable Button.OnPress buttonPressed = null;
+        private int x = 0, y = 0, width = 0, height = 0, textureYOffset = 0;
 
         public TabBuilder() {}
 
         /**
          * Set the position of the tab button.
          */
-        public TabBuilder position(int x, int y) {
+        public @NotNull TabBuilder position(int x, int y) {
             this.x = x;
             this.y = y;
             return this;
@@ -126,7 +132,7 @@ public class TabButton extends ImageButton {
         /**
          * Size of the tab button.
          */
-        public TabBuilder size(int width, int height) {
+        public @NotNull TabBuilder size(int width, int height) {
             this.width = width;
             this.height = height;
             return this;
@@ -135,7 +141,7 @@ public class TabButton extends ImageButton {
         /**
          * Offset the tab button.
          */
-        public TabBuilder offset(int y) {
+        public @NotNull TabBuilder offset(int y) {
             this.textureYOffset = y;
             return this;
         }
@@ -145,7 +151,7 @@ public class TabButton extends ImageButton {
          * Use bounds() to set up the texture position.
          * @param normal A valid ResourceLocation.
          */
-        public TabBuilder texture(@NotNull ResourceLocation normal) {
+        public @NotNull TabBuilder texture(@NotNull ResourceLocation normal) {
             this.normalTexture = normal;
             this.selectedTexture = null;
             return this;
@@ -157,7 +163,7 @@ public class TabButton extends ImageButton {
          * @param normal A valid ResourceLocation.
          * @param selected A valid ResourceLocation.
          */
-        public TabBuilder texture(@NotNull ResourceLocation normal, @NotNull ResourceLocation selected) {
+        public @NotNull TabBuilder texture(@NotNull ResourceLocation normal, @NotNull ResourceLocation selected) {
             this.normalTexture = normal;
             this.selectedTexture = selected;
             return this;
@@ -167,16 +173,9 @@ public class TabButton extends ImageButton {
          * Tab texture position in their ResourceLocation.
          * @param normal A valid texture position.
          */
-        public TabBuilder bounds(@NotNull Rect2i normal) {
+        public @NotNull TabBuilder bounds(@NotNull Rect2i normal) {
             this.normalTextureRect = normal;
-            return this;
-        }
-
-        /**
-         * Set up a message on the tab button. (Can be ignored if icon is used)
-         */
-        public TabBuilder message(@NotNull Component message) {
-            this.message = message;
+            this.selectedTextureRect = null;
             return this;
         }
 
@@ -185,18 +184,35 @@ public class TabButton extends ImageButton {
          * @param normal A valid texture position.
          * @param selected A valid texture position.
          */
-        public TabBuilder bounds(@NotNull Rect2i normal, @NotNull Rect2i selected) {
+        public @NotNull TabBuilder bounds(@NotNull Rect2i normal, @NotNull Rect2i selected) {
             this.normalTextureRect = normal;
             this.selectedTextureRect = selected;
             return this;
         }
 
         /**
-         * When tab is pressed, callback is called.
-         * @param onPress A valid callback.
+         * Set up a message on the tab button. (Can be ignored if icon is used)
          */
-        public TabBuilder onPressed(@NotNull OnTabPress onPress) {
-            this.tabPressed = onPress;
+        public @NotNull TabBuilder message(@NotNull Component message) {
+            this.message = message;
+            return this;
+        }
+
+        /**
+         * When tab is pressed, callback is called.
+         * @param onTabPress A valid callback.
+         */
+        public @NotNull TabBuilder onTabPress(@NotNull OnTabPress onTabPress) {
+            this.tabPressed = onTabPress;
+            return this;
+        }
+
+        /**
+         * When button is pressed, callback is called.
+         * @param onButtonPressed A valid callback.
+         */
+        public @NotNull TabBuilder onButtonPressed(@NotNull OnPress onButtonPressed){
+            this.buttonPressed = onButtonPressed;
             return this;
         }
 
@@ -205,17 +221,37 @@ public class TabButton extends ImageButton {
          * @return A valid tab button.
          */
         public @NotNull TabButton build() {
-            return new TabButton(this.x,
-                    this.y,
-                    this.width,
-                    this.height,
-                    this.textureYOffset,
-                    this.normalTexture,
-                    this.normalTextureRect,
-                    this.selectedTexture,
-                    this.selectedTextureRect,
-                    this.tabPressed,
-                    this.message);
+            // At last normal and normal texture rectangle need to be set !
+            if (this.normalTexture == null || this.normalTextureRect == null) {
+                throw new ResourceLocationException("Failed to build() TabButton, NormalTexture or NormalTextureRect not set or null !");
+            }
+
+            // Check for selected texture.
+            if (this.selectedTexture == null) {
+                if (this.selectedTextureRect == null) {
+                    // If both is null, make it only normal tab.
+                    return new TabButton(this.x, this.y, this.width, this.height, this.textureYOffset, this.normalTexture, this.normalTextureRect, this.buttonPressed != null ? this.buttonPressed : (e) -> {});
+                } else { // Selected have UV, then it's inside normal location !
+                    return new TabButton(this.x, this.y, this.width, this.height, this.textureYOffset, this.normalTexture, this.normalTextureRect, this.selectedTextureRect, this.tabPressed != null ? this.tabPressed : (e) -> {}, this.message != null ? this.message : Component.empty());
+                }
+            }
+            else {
+                // Selected texture rectangle is required.
+                if (this.selectedTextureRect == null) {
+                    throw new NullPointerException("Failed to build() TabButton, SelectedTextureRect is null, but it's required !");
+                }
+                return new TabButton(this.x,
+                        this.y,
+                        this.width,
+                        this.height,
+                        this.textureYOffset,
+                        this.normalTexture,
+                        this.normalTextureRect,
+                        this.selectedTexture,
+                        this.selectedTextureRect,
+                        this.tabPressed != null ? this.tabPressed : (e) -> {},
+                        this.message != null ? this.message : Component.empty());
+            }
         }
     }
 }
