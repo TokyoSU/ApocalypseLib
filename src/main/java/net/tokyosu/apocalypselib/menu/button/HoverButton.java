@@ -99,6 +99,7 @@ public class HoverButton extends ImageButton {
     /**
      * Helper to create hover button.
      */
+    @SuppressWarnings("UnusedReturnValue")
     public static class HoverBuilder {
         private @Nullable ResourceLocation normalTexture = null;
         private @Nullable ResourceLocation hoveredTexture = null;
@@ -224,7 +225,7 @@ public class HoverButton extends ImageButton {
          * When hover is pressed, callback is called.
          * @param onHoverPressed A valid callback.
          */
-        public @NotNull HoverBuilder onTabPress(@NotNull HoverButton.OnPress onHoverPressed) {
+        public @NotNull HoverBuilder onHoverPress(@NotNull HoverButton.OnPress onHoverPressed) {
             this.hoverPressed = onHoverPressed;
             return this;
         }

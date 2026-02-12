@@ -18,7 +18,7 @@ import org.jetbrains.annotations.Nullable;
 public class TabButton extends ImageButton {
     private final ResourceLocation normalTexture;
     private final ResourceLocation selectedTexture;
-    private final OnTabPress tabPressed;
+    private final OnPress tabPressed;
     private Rect2i normalTextureRect;
     private Rect2i selectedTextureRect;
     private boolean isSelected = false;
@@ -51,22 +51,22 @@ public class TabButton extends ImageButton {
         this.tabPressed = null;
     }
 
-    public TabButton(int x, int y, int width, int height, int textureYOffset, @NotNull ResourceLocation texture, @NotNull Rect2i normalTextureRect, @NotNull Rect2i selectedTextureRect, @NotNull TabButton.OnTabPress onTabPress, @NotNull Component message) {
+    public TabButton(int x, int y, int width, int height, int textureYOffset, @NotNull ResourceLocation texture, @NotNull Rect2i normalTextureRect, @NotNull Rect2i selectedTextureRect, @NotNull TabButton.OnPress onPress, @NotNull Component message) {
         super(x, y, width, height, normalTextureRect.getX(), normalTextureRect.getY(), textureYOffset, texture, normalTextureRect.getWidth(), normalTextureRect.getHeight(), (button) -> {}, message);
         this.normalTexture = texture;
         this.normalTextureRect = normalTextureRect;
         this.selectedTexture = null;
         this.selectedTextureRect = selectedTextureRect;
-        this.tabPressed = onTabPress;
+        this.tabPressed = onPress;
     }
 
-    public TabButton(int x, int y, int width, int height, int textureYOffset, @NotNull ResourceLocation normalTexture, @NotNull Rect2i normalTextureRect, @NotNull ResourceLocation selectedTexture, @NotNull Rect2i selectedTextureRect, @NotNull OnTabPress onTabPress, @NotNull Component message) {
+    public TabButton(int x, int y, int width, int height, int textureYOffset, @NotNull ResourceLocation normalTexture, @NotNull Rect2i normalTextureRect, @NotNull ResourceLocation selectedTexture, @NotNull Rect2i selectedTextureRect, @NotNull TabButton.OnPress onPress, @NotNull Component message) {
         super(x, y, width, height, normalTextureRect.getX(), normalTextureRect.getY(), textureYOffset, normalTexture, normalTextureRect.getWidth(), normalTextureRect.getHeight(), (button) -> {}, message);
         this.normalTexture = normalTexture;
         this.normalTextureRect = normalTextureRect;
         this.selectedTexture = selectedTexture;
         this.selectedTextureRect = selectedTextureRect;
-        this.tabPressed = onTabPress;
+        this.tabPressed = onPress;
     }
 
     @Override
@@ -93,7 +93,7 @@ public class TabButton extends ImageButton {
     }
 
     @OnlyIn(Dist.CLIENT)
-    public interface OnTabPress {
+    public interface OnPress {
         void onPress(TabButton button);
     }
 
@@ -108,13 +108,14 @@ public class TabButton extends ImageButton {
     /**
      * Helper to create tab button.
      */
+    @SuppressWarnings("UnusedReturnValue")
     public static class TabBuilder {
         private @Nullable ResourceLocation normalTexture = null;
         private @Nullable ResourceLocation selectedTexture = null;
         private @Nullable Component message = null;
         private @Nullable Rect2i normalTextureRect = null;
         private @Nullable Rect2i selectedTextureRect = null;
-        private @Nullable TabButton.OnTabPress tabPressed = null;
+        private @Nullable TabButton.OnPress tabPressed = null;
         private @Nullable Button.OnPress buttonPressed = null;
         private int x = 0, y = 0, width = 0, height = 0, textureYOffset = 0;
         private int guiWidth = 0, guiHeight = 0;
@@ -231,10 +232,10 @@ public class TabButton extends ImageButton {
 
         /**
          * When tab is pressed, callback is called.
-         * @param onTabPress A valid callback.
+         * @param onPress A valid callback.
          */
-        public @NotNull TabBuilder onTabPress(@NotNull OnTabPress onTabPress) {
-            this.tabPressed = onTabPress;
+        public @NotNull TabBuilder onTabPress(@NotNull TabButton.OnPress onPress) {
+            this.tabPressed = onPress;
             return this;
         }
 
@@ -242,7 +243,7 @@ public class TabButton extends ImageButton {
          * When button is pressed, callback is called.
          * @param onButtonPressed A valid callback.
          */
-        public @NotNull TabBuilder onButtonPressed(@NotNull OnPress onButtonPressed){
+        public @NotNull TabBuilder onButtonPressed(@NotNull Button.OnPress onButtonPressed){
             this.buttonPressed = onButtonPressed;
             return this;
         }
