@@ -26,7 +26,7 @@ public class ScrollableGrid {
     public static final int SCROLLBAR_HEIGHT = ROWS_VISIBLE * SLOT_SIZE - 2;
     private final List<ItemStack> filteredItems = new ArrayList<>();
     private final SimpleContainer container;
-    private Map<String, SortedSet<ItemStack>> sortedMap;
+    private Map<String, LinkedHashSet<ItemStack>> linkedItems;
     private String searchFilter = "";
     private ResourceLocation scrollTexture;
     private String tabIdentifier;
@@ -48,8 +48,8 @@ public class ScrollableGrid {
     /**
      * Set an items list mapped with a mod id.
      */
-    public void setItemList(@NotNull Map<String, SortedSet<ItemStack>> items) {
-        this.sortedMap = items;
+    public void setItemList(@NotNull Map<String, LinkedHashSet<ItemStack>> items) {
+        this.linkedItems = items;
     }
 
     /**
@@ -131,17 +131,17 @@ public class ScrollableGrid {
     }
 
     private void rebuildAdd() {
-        if (this.sortedMap != null && !this.sortedMap.isEmpty()) {
+        if (this.linkedItems != null && !this.linkedItems.isEmpty()) {
             for(int i = 0; i < this.container.getContainerSize(); ++i) {
                 this.container.setItem(i, ItemStack.EMPTY);
             }
 
             // Sort it to avoid items at different place in the list.
-            var sortedStacks = this.sortedMap.get(this.tabIdentifier);
-            if (!sortedStacks.isEmpty()) {
+            var linkedSet = this.linkedItems.get(this.tabIdentifier);
+            if (!linkedSet.isEmpty()) {
                 this.filteredItems.clear();
 
-                for (var stack : sortedStacks) {
+                for (var stack : linkedSet) {
                     if (this.searchFilter.isEmpty() || SearchUtils.matches(stack, this.searchFilter)) {
                         this.filteredItems.add(stack);
                     }
