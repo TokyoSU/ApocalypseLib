@@ -2,10 +2,11 @@ package net.tokyosu.apocalypselib.utils;
 
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.fml.ModList;
+import org.jetbrains.annotations.NotNull;
 
 @SuppressWarnings("unused")
 public class ModUtils {
-    public static String getModName(String namespace) {
+    public static @NotNull String getModName(@NotNull String namespace) {
         return ModList.get()
                 .getModContainerById(namespace)
                 .map(container -> container.getModInfo().getDisplayName())
@@ -16,7 +17,7 @@ public class ModUtils {
         return ModList.get().size();
     }
 
-    public static String getModName(ResourceLocation location) {
+    public static @NotNull String getModName(@NotNull ResourceLocation location) {
         return getModName(location.getNamespace());
     }
 }

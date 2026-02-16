@@ -1,16 +1,18 @@
 package net.tokyosu.apocalypselib.menu.component;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
 import net.tokyosu.apocalypselib.ApocalypseLib;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Helper to create a scrollable item grid.
@@ -25,6 +27,7 @@ public class ScrollableGrid {
     public static final int KNOB_HEIGHT = 15;
     public static final int SCROLLBAR_WIDTH = 12;
     public static final int SCROLLBAR_HEIGHT = ROWS_VISIBLE * SLOT_SIZE - 2;
+    private final Map<ItemStack, List<Component>> tooltipCache = new WeakHashMap<>();
     private final List<ItemStack> filteredItems = new ArrayList<>();
     private final SimpleContainer container;
     private Map<String, List<ItemStack>> modListStacked;
@@ -53,7 +56,11 @@ public class ScrollableGrid {
         this.modListStacked = items;
     }
 
-    public void setSearchFilter(String filter) {
+    /**
+     * Set a search filter.
+     * @param filter A valid filter.
+     */
+    public void setSearchFilter(@NotNull String filter) {
         this.searchFilter = filter.toLowerCase();
         this.scrollRow = 0;
         this.rebuildAdd();
@@ -117,6 +124,9 @@ public class ScrollableGrid {
         return this.tabIdentifier;
     }
 
+    /**
+     * Rebuild the list if anything need it, this need to be called !
+     */
     public void tick() {
         if (this.dirty) {
             this.rebuildAdd();
@@ -125,34 +135,33 @@ public class ScrollableGrid {
     }
 
     private void rebuildAdd() {
-        if (this.modListStacked == null || this.modListStacked.isEmpty()) {
-            ApocalypseLib.LOGGER.error("Failed to rebuild() a ScrollableGrid, modlist is null !\nBe sure to call setItemList() before doing anything !");
-            return;
-        }
-
-        // Clear all slots first
-        for (int i = 0; i < this.container.getContainerSize(); i++) {
-            this.container.setItem(i, ItemStack.EMPTY);
-        }
-
-        var itemList = this.modListStacked.get(this.tabIdentifier);
-        if (itemList == null || itemList.isEmpty()) {
-            ApocalypseLib.LOGGER.error("Failed to rebuild() a ScrollableGrid, modlist is null or empty\nDid you call setItemList() or build the list correctly ?");
-            return;
-        }
-
-        // Apply search filter if needed
-        this.filteredItems.clear();
-        for (var stack : itemList) {
-            if (this.searchFilter.isEmpty() || stack.getHoverName().getString().toLowerCase().contains(this.searchFilter)) {
-                this.filteredItems.add(stack);
+        if (this.modListStacked != null && !this.modListStacked.isEmpty()) {
+            for(int i = 0; i < this.container.getContainerSize(); ++i) {
+                this.container.setItem(i, ItemStack.EMPTY);
             }
-        }
 
-        // Rebuild visible items
-        this.rebuild();
+            List<ItemStack> itemList = this.modListStacked.get(this.tabIdentifier);
+            if (itemList != null && !itemList.isEmpty()) {
+                this.filteredItems.clear();
+
+                for(ItemStack stack : itemList) {
+                    if (this.searchFilter.isEmpty() || this.matchesSearch(stack)) {
+                        this.filteredItems.add(stack);
+                    }
+                }
+
+                this.rebuild();
+            } else {
+                ApocalypseLib.LOGGER.error("Failed to rebuild() a ScrollableGrid, modlist is null or empty\nDid you call setItemList() or build the list correctly ?");
+            }
+        } else {
+            ApocalypseLib.LOGGER.error("Failed to rebuild() a ScrollableGrid, modlist is null !\nBe sure to call setItemList() before doing anything !");
+        }
     }
 
+    /**
+     * Rebuild the container items list and notify it that it need to rebuild for the renderer.
+     */
     private void rebuild() {
         // Clear ALL slots
         for (int i = 0; i < this.container.getContainerSize(); i++) {
@@ -230,5 +239,71 @@ public class ScrollableGrid {
         double percent = Mth.clamp(relative / movableHeight, 0.0, 1.0);
         this.scrollRow = (int)Math.round(percent * getMaxScroll());
         this.dirty = true;
+    }
+
+    /**
+     * Extensive research to include almost anything from tooltip to nbt and display name etc...
+     * @param stack A valid ItemStack.
+     * @return True if anything is found inside the item that contains this.searchFilter !
+     */
+    private boolean matchesSearch(@NotNull ItemStack stack) {
+        var search = this.searchFilter.toLowerCase();
+
+        // 1. Search by display name (existing behavior)
+        if (stack.getHoverName().getString().toLowerCase().contains(search)) {
+            return true;
+        }
+
+        // 2. Search by item registry name (e.g., "enchanted_book")
+        var itemName = stack.getItem().toString().toLowerCase();
+        if (itemName.contains(search)) {
+            return true;
+        }
+
+        // 3. Search by tooltip content (includes enchantments, lore, etc.)
+        if (stack.hasTag() && stack.getTag() != null) {
+            var tag = stack.getTag();
+
+            // Get minecraft instance safely
+            // Use cached tooltip to avoid lag each time its called.
+            var tooltip = tooltipCache.computeIfAbsent(stack, s -> {
+                var mc = net.minecraft.client.Minecraft.getInstance();
+                if (mc.player != null) {
+                    return s.getTooltipLines(mc.player, TooltipFlag.Default.NORMAL);
+                }
+                return Collections.emptyList();
+            });
+            for (var line : tooltip) {
+                if (line.getString().toLowerCase().contains(search)) {
+                    return true;
+                }
+            }
+
+            // 4. Search directly in NBT for stored enchantments (enchanted books)
+            if (tag.contains("StoredEnchantments", 9)) {
+                var enchantments = tag.getList("StoredEnchantments", 10);
+                if (this.foundEnchantmentFromNBT(search, enchantments)) return true;
+            }
+
+            // 5. Search regular enchantments (on tools/armor)
+            if (tag.contains("Enchantments", 9)) {
+                var enchantments = tag.getList("Enchantments", 10);
+                return this.foundEnchantmentFromNBT(search, enchantments);
+            }
+        }
+
+        return false;
+    }
+
+    private boolean foundEnchantmentFromNBT(@NotNull String search, @NotNull ListTag enchantments) {
+        for (int i = 0; i < enchantments.size(); i++) {
+            net.minecraft.nbt.CompoundTag enchTag = enchantments.getCompound(i);
+            String enchId = enchTag.getString("id");
+            // Search by enchantment ID (e.g., "minecraft:protection")
+            if (enchId.toLowerCase().contains(search)) {
+                return true;
+            }
+        }
+        return false;
     }
 }

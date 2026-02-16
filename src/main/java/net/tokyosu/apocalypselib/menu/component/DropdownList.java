@@ -13,6 +13,10 @@ import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
+/**
+ * Make a dropdown list using texture as base.
+ * @param <T> A structure or class that will be used as value to draw, use the displayFunction argument to draw it correctly.
+ */
 @SuppressWarnings({"SpellCheckingInspection", "FieldCanBeLocal", "unused"})
 public class DropdownList<T> {
     private final ResourceLocation texture; // A sprite sheet to show all widgets used.
@@ -53,7 +57,7 @@ public class DropdownList<T> {
                         int textureWidth, int textureHeight,
                         int itemHeight,
                         @NotNull Function<T, Component> displayFunction,
-                        Consumer<T> onSelect) {
+                        @NotNull Consumer<T> onSelect) {
         this.posAndSize = posAndSize;
         this.texture = texture;
         this.onSelect = onSelect;
