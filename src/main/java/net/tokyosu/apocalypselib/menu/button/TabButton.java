@@ -11,11 +11,11 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.w3c.dom.css.Rect;
 
 /**
  * Define a tab button that can change it's state from normal to selected or vice versa.
  */
+@SuppressWarnings("unused")
 public class TabButton extends ImageButton {
     private final ResourceLocation normalTexture;
     private final ResourceLocation selectedTexture;

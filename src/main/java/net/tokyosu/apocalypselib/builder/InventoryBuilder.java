@@ -19,6 +19,7 @@ import org.jetbrains.annotations.NotNull;
  * Helper to create inventory, contains some functions to help.
  * Also avoid doing relative position each time for .
  */
+@SuppressWarnings("unused")
 public class InventoryBuilder {
     private final ResourceLocation background;
     private final int textureWidth;

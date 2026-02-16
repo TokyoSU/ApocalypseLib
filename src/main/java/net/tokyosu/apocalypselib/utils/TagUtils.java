@@ -5,13 +5,14 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtUtils;
 import net.minecraft.nbt.TagParser;
 import net.minecraft.world.item.ItemStack;
-import net.tokyosu.apocalypselib.ApLib;
+import net.tokyosu.apocalypselib.ApocalypseLib;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
  * Contains some function for simplifying tag/nbt creating, check etc...
  */
+@SuppressWarnings("unused")
 public class TagUtils {
     /**
      * Process a nbt from a string.
@@ -24,7 +25,7 @@ public class TagUtils {
         try {
             nbtTag = TagParser.parseTag(nbt);
         } catch (CommandSyntaxException e) {
-            ApLib.LOGGER.error("Failed to create an CompoundTag, Error: {}, NBT used: {}", e.getMessage(), nbt);
+            ApocalypseLib.LOGGER.error("Failed to create an CompoundTag, Error: {}, NBT used: {}", e.getMessage(), nbt);
             return null;
         }
         return nbtTag;

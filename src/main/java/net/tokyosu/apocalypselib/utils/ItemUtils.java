@@ -10,6 +10,7 @@ import org.jetbrains.annotations.NotNull;
 /**
  * Contains some utils for inventory like creation of items.
  */
+@SuppressWarnings("unused")
 public final class ItemUtils {
     /**
      * Create an ItemStack using a resource name.

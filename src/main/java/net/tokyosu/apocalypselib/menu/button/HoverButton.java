@@ -15,6 +15,7 @@ import org.jetbrains.annotations.Nullable;
 /**
  * Define a button that can change it's state from normal and hovered or vice versa.
  */
+@SuppressWarnings("unused")
 public class HoverButton extends ImageButton {
     private final ResourceLocation normalTexture;
     private final ResourceLocation hoveredTexture;
@@ -187,7 +188,7 @@ public class HoverButton extends ImageButton {
          * @param normal A valid texture position.
          */
         public @NotNull HoverBuilder bounds(@NotNull Rect2i normal) {
-            this.normalTextureRect = normal;
+            this.normalTextureRect = new Rect2i(normal.getX(), normal.getY(), normal.getWidth(), normal.getHeight());
             this.hoveredTextureRect = null;
             if (this.isIntegratedByGUI && this.hasGuiSizeBeenSet) {
                 this.normalTextureRect.setWidth(this.guiWidth);
@@ -202,8 +203,8 @@ public class HoverButton extends ImageButton {
          * @param selected A valid texture position.
          */
         public @NotNull HoverBuilder bounds(@NotNull Rect2i normal, @NotNull Rect2i selected) {
-            this.normalTextureRect = normal;
-            this.hoveredTextureRect = selected;
+            this.normalTextureRect = new Rect2i(normal.getX(), normal.getY(), normal.getWidth(), normal.getHeight());
+            this.hoveredTextureRect = new Rect2i(selected.getX(), selected.getY(), selected.getWidth(), selected.getHeight());
             if (this.isIntegratedByGUI && this.hasGuiSizeBeenSet) {
                 this.normalTextureRect.setWidth(this.guiWidth);
                 this.normalTextureRect.setHeight(this.guiHeight);

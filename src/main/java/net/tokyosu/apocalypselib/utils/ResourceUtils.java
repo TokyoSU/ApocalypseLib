@@ -9,6 +9,7 @@ import org.jetbrains.annotations.Nullable;
 /**
  * Contains some functions to check or validate resource location.
  */
+@SuppressWarnings({"unused", "SpellCheckingInspection"})
 public class ResourceUtils {
     /**
      * Does a ResourceLocation is associated with an item ?

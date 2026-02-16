@@ -13,6 +13,7 @@ import java.util.Objects;
 /**
  * Contains some functions and helper for rarity.
  */
+@SuppressWarnings("unused")
 public class RarityUtils {
     private static final HashMap<Rarity, Style> STYLE_MAP = new HashMap<>();
     private static final @NotNull TextColor WHITE_COLOR = Objects.requireNonNull(TextColor.fromLegacyFormat(ChatFormatting.WHITE));

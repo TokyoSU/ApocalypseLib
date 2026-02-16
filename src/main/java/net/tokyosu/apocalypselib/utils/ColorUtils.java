@@ -5,6 +5,7 @@ import net.minecraft.util.FastColor;
 import net.minecraft.world.item.Rarity;
 import org.jetbrains.annotations.NotNull;
 
+@SuppressWarnings("unused")
 public class ColorUtils {
     /**
      * Get an ARGB packed color from Rarity.
