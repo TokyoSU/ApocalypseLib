@@ -11,6 +11,7 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.w3c.dom.css.Rect;
 
 /**
  * Define a tab button that can change it's state from normal to selected or vice versa.
@@ -196,7 +197,7 @@ public class TabButton extends ImageButton {
          * @param normal A valid texture position.
          */
         public @NotNull TabBuilder bounds(@NotNull Rect2i normal) {
-            this.normalTextureRect = normal;
+            this.normalTextureRect = new Rect2i(normal.getX(), normal.getY(), normal.getWidth(), normal.getHeight()); // Avoid overriding the original value !
             this.selectedTextureRect = null;
             if (this.isIntegratedByGUI && this.hasGuiSizeBeenSet) {
                 this.normalTextureRect.setWidth(this.guiWidth);
@@ -211,8 +212,8 @@ public class TabButton extends ImageButton {
          * @param selected A valid texture position.
          */
         public @NotNull TabBuilder bounds(@NotNull Rect2i normal, @NotNull Rect2i selected) {
-            this.normalTextureRect = normal;
-            this.selectedTextureRect = selected;
+            this.normalTextureRect = new Rect2i(normal.getX(), normal.getY(), normal.getWidth(), normal.getHeight()); // Avoid overriding the original value !
+            this.selectedTextureRect = new Rect2i(selected.getX(), selected.getY(), selected.getWidth(), selected.getHeight()); // Avoid overriding the original value !
             if (this.isIntegratedByGUI && this.hasGuiSizeBeenSet) {
                 this.normalTextureRect.setWidth(this.guiWidth);
                 this.normalTextureRect.setHeight(this.guiHeight);
