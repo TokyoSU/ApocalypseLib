@@ -195,7 +195,8 @@ public class DropdownList<T> {
 
                     if (isHovered) {
                         this.hoveredItem = value;
-                        this.onSelectHovered.accept(new Tuple<>(hoveredRect, this.hoveredItem));
+                        if (this.onSelectHovered != null)
+                            this.onSelectHovered.accept(new Tuple<>(hoveredRect, this.hoveredItem));
                     }
 
                     // Draw background for hovered item
