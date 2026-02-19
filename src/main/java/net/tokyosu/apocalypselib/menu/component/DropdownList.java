@@ -6,8 +6,11 @@ import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
+import net.minecraft.util.Tuple;
+import net.tokyosu.apocalypselib.ApocalypseLib;
 import net.tokyosu.apocalypselib.menu.button.HoverButton;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.function.Consumer;
@@ -19,7 +22,8 @@ import java.util.function.Function;
  */
 @SuppressWarnings({"SpellCheckingInspection", "FieldCanBeLocal", "unused"})
 public class DropdownList<T> {
-    private final ResourceLocation texture; // A sprite sheet to show all widgets used.
+    private static final ResourceLocation DROP_DOWN_TEXTURE = ResourceLocation.fromNamespaceAndPath(ApocalypseLib.MOD_ID, "textures/gui/dropdown.png");
+    private final ResourceLocation texture;
     private final Rect2i posAndSize;
     private final Rect2i clippedArea; // The area where the values can scroll (outside will not show).
     private final Rect2i mainArea; // The main area (drop bar + button)
@@ -28,6 +32,7 @@ public class DropdownList<T> {
     private final Rect2i scrollTex; // The scroll bar button that move think up/down.
     private final Rect2i dropbar; // The drop bar (A whole button).
     private final Consumer<T> onSelect; // Callback when a value is selected.
+    private final Consumer<Tuple<Rect2i, T>> onSelectHovered;
     private final HoverButton dropbarDownBtn;
     private final HoverButton dropbarUpBtn;
     private final Function<T, Component> displayFunction;
@@ -41,7 +46,7 @@ public class DropdownList<T> {
     private T hoveredItem = null;
     private List<T> values; // All values to show if dropbar is selected.
     private T selected; // The value selected if any.
-    private boolean isClosing = false;
+    private boolean isClosing;
 
     public DropdownList(@NotNull Rect2i posAndSize,
                         @NotNull Rect2i dropbar,
@@ -53,13 +58,32 @@ public class DropdownList<T> {
                         @NotNull Rect2i scrollTex,
                         @NotNull Rect2i textArea,
                         @NotNull Rect2i clippedArea,
-                        @NotNull ResourceLocation texture,
+                        @Nullable ResourceLocation texture,
                         int textureWidth, int textureHeight,
                         int itemHeight,
                         @NotNull Function<T, Component> displayFunction,
                         @NotNull Consumer<T> onSelect) {
+        this(posAndSize, dropbar, dropbarHover, dropbarup, dropbarupHover, mainArea, scrollArea, scrollTex, textArea, clippedArea, texture, textureWidth, textureHeight, itemHeight, displayFunction, onSelect, null);
+    }
+
+    public DropdownList(@NotNull Rect2i posAndSize,
+                        @NotNull Rect2i dropbar,
+                        @NotNull Rect2i dropbarHover,
+                        @NotNull Rect2i dropbarup,
+                        @NotNull Rect2i dropbarupHover,
+                        @NotNull Rect2i mainArea,
+                        @NotNull Rect2i scrollArea,
+                        @NotNull Rect2i scrollTex,
+                        @NotNull Rect2i textArea,
+                        @NotNull Rect2i clippedArea,
+                        @Nullable ResourceLocation texture,
+                        int textureWidth, int textureHeight,
+                        int itemHeight,
+                        @NotNull Function<T, Component> displayFunction,
+                        @NotNull Consumer<T> onSelect,
+                        @Nullable Consumer<Tuple<Rect2i, T>> onSelectHovered) {
         this.posAndSize = posAndSize;
-        this.texture = texture;
+        this.texture = texture != null ? texture : DROP_DOWN_TEXTURE;
         this.onSelect = onSelect;
         this.clippedArea = clippedArea;
         this.mainArea = mainArea;
@@ -71,6 +95,7 @@ public class DropdownList<T> {
         this.textureHeight = textureHeight;
         this.itemHeight = itemHeight;
         this.displayFunction = displayFunction;
+        this.onSelectHovered = onSelectHovered;
 
         int x = posAndSize.getX();
         int y = posAndSize.getY();
@@ -163,37 +188,29 @@ public class DropdownList<T> {
                 if (itemY + this.itemHeight >= clipTop && itemY < clipBottom) {
 
                     // Check if this item is hovered
-                    boolean isHovered = mouseX >= clipLeft &&
-                            mouseX <= clipLeft + this.clippedArea.getWidth() &&
-                            mouseY >= itemY &&
-                            mouseY < itemY + this.itemHeight &&
-                            mouseY >= clipTop &&
-                            mouseY < clipBottom;
+                    var isHovered = mouseX >= clipLeft && mouseX <= clipLeft + this.clippedArea.getWidth() &&
+                            mouseY >= itemY && mouseY < itemY + this.itemHeight &&
+                            mouseY >= clipTop && mouseY < clipBottom;
+                    var hoveredRect = new Rect2i(clipLeft, itemY, clipLeft + this.clippedArea.getWidth(), itemY + this.itemHeight);
 
                     if (isHovered) {
                         this.hoveredItem = value;
+                        this.onSelectHovered.accept(new Tuple<>(hoveredRect, this.hoveredItem));
                     }
 
                     // Draw background for hovered item
                     if (isHovered) {
-                        graphics.fill(clipLeft, itemY,
-                                clipLeft + this.clippedArea.getWidth(),
-                                itemY + this.itemHeight,
-                                0x80FFFFFF);
+                        graphics.fill(hoveredRect.getX(), hoveredRect.getY(), hoveredRect.getWidth(), hoveredRect.getHeight(), 0x80FFFFFF);
                     }
 
                     // Draw background for selected item
                     if (value.equals(this.selected)) {
-                        graphics.fill(clipLeft, itemY,
-                                clipLeft + this.clippedArea.getWidth(),
-                                itemY + this.itemHeight,
-                                0x60FFFF00);
+                        graphics.fill(hoveredRect.getX(), hoveredRect.getY(), hoveredRect.getWidth(), hoveredRect.getHeight(), 0x60FFFF00);
                     }
 
                     // Draw item text
                     Component text = this.displayFunction.apply(value);
-                    graphics.drawString(Minecraft.getInstance().font, text,
-                            clipLeft + 4, itemY + (this.itemHeight / 2) - 4, 0xFFFFFF);
+                    graphics.drawString(Minecraft.getInstance().font, text, clipLeft + 4, itemY + (this.itemHeight / 2) - 4, 0xFFFFFF);
                 }
             }
         }
@@ -435,6 +452,4 @@ public class DropdownList<T> {
     private void disableScissor(@NotNull GuiGraphics graphics) {
         graphics.disableScissor();
     }
-
-
 }

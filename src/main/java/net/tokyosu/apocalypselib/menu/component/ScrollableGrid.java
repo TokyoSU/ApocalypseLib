@@ -19,7 +19,7 @@ import java.util.*;
 public class ScrollableGrid {
     public static final int COLUMNS = 9;
     public static final int ROWS_VISIBLE = 5;
-    public static final int MAX_SLOTS = COLUMNS * ROWS_VISIBLE * 256;
+    public static final int MAX_SLOTS = COLUMNS * ROWS_VISIBLE;
     public static final int SLOT_SIZE = 18;
     public static final int KNOB_HEIGHT = 15;
     public static final int SCROLLBAR_WIDTH = 12;

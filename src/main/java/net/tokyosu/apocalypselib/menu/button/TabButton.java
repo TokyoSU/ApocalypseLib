@@ -7,6 +7,7 @@ import net.minecraft.client.gui.components.ImageButton;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import org.jetbrains.annotations.NotNull;
@@ -23,6 +24,9 @@ public class TabButton extends ImageButton {
     private Rect2i normalTextureRect;
     private Rect2i selectedTextureRect;
     private boolean isSelected = false;
+    private ItemStack icon;
+    private int iconOffsetX;
+    private int iconOffsetY;
 
     public TabButton(int x, int y, int width, int height, int textureX, int textureY, @NotNull ResourceLocation texture, @NotNull Button.OnPress onPress) {
         super(x, y, width, height, textureX, textureY, texture, onPress);
@@ -86,10 +90,22 @@ public class TabButton extends ImageButton {
         this.isSelected = false;
     }
 
+    public void setTabIcon(@NotNull ItemStack icon) {
+        this.icon = icon;
+    }
+
+    public void setTabIconOffset(int x, int y) {
+        this.iconOffsetX = x;
+        this.iconOffsetY = y;
+    }
+
     @Override
     public void renderTexture(@NotNull GuiGraphics pGraphics, @NotNull ResourceLocation texture, int x, int y, int textureX, int textureY, int textureYDiff, int width, int height, int textureWidth, int textureHeight) {
         final var resource = (this.selectedTexture != null && this.isSelected) ? this.selectedTexture : this.normalTexture;
         final var rectangle = (this.selectedTextureRect != null && this.isSelected) ? this.selectedTextureRect : this.normalTextureRect;
+        if (this.icon != null) {
+            pGraphics.renderItem(this.icon, x + this.iconOffsetX, y + this.iconOffsetY);
+        }
         super.renderTexture(pGraphics, resource, x, y, rectangle.getX(), rectangle.getY(), textureYDiff, width, height, rectangle.getWidth(), rectangle.getHeight());
     }
 

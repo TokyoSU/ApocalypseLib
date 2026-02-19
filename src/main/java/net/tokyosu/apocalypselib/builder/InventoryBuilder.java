@@ -6,6 +6,7 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
@@ -85,6 +86,20 @@ public class InventoryBuilder {
     }
 
     /**
+     * Get the UI size X.
+     */
+    public int getWidth() {
+        return this.width;
+    }
+
+    /**
+     * Get the UI size Y.
+     */
+    public int getHeight() {
+        return this.height;
+    }
+
+    /**
      * Set the GuiGraphics to draw thinks.
      * @param pGuiGraphics A valid GuiGraphics.
      */
@@ -108,7 +123,8 @@ public class InventoryBuilder {
      * @param texY Size Y of the background.
      */
     public void drawBackground(int x, int y, int texX, int texY) {
-        pGui.blit(this.background, this.posX + x, this.posY + y, texX, texY, this.width, this.height, this.textureWidth, this.textureHeight);
+        if (this.pGui == null) return;
+        this.pGui.blit(this.background, this.posX + x, this.posY + y, texX, texY, this.width, this.height, this.textureWidth, this.textureHeight);
     }
 
     /**
@@ -119,8 +135,9 @@ public class InventoryBuilder {
      * @param colorRGB Color of the text, usually WHITE.
      */
     public void drawString(int x, int y, @NotNull Component text, int colorRGB) {
+        if (this.pGui == null) return;
         if (this.pFont != null) {
-            pGui.drawString(this.pFont, text, this.posX + x, this.posY + y, colorRGB);
+            this.pGui.drawString(this.pFont, text, this.posX + x, this.posY + y, colorRGB);
         }
     }
 
@@ -131,6 +148,7 @@ public class InventoryBuilder {
      * @param y Starting Y position.
      */
     public void drawPulsatingString(@NotNull Component text, int x, int y) {
+        if (this.pGui == null) return;
         if (this.pFont == null) return;
 
         float time = (float)(System.currentTimeMillis() % 1000L) / 1000.0F;
@@ -164,6 +182,16 @@ public class InventoryBuilder {
         this.pGui.pose().popPose();
     }
 
+    public void drawTexture(int x, int y, int texX, int texY, int texWidth, int texHeight) {
+        if (this.pGui == null) return;
+        this.pGui.blit(this.background, this.posX + x, this.posY + y, texX, texY, texWidth, texHeight, this.textureWidth, this.textureHeight);
+    }
+
+    public void drawTexture(int x, int y, @NotNull Rect2i texturePos) {
+        if (this.pGui == null) return;
+        this.pGui.blit(this.background, this.posX + x, this.posY + y, texturePos.getX(), texturePos.getY(), texturePos.getWidth(), texturePos.getHeight(), this.textureWidth, this.textureHeight);
+    }
+
     /**
      * Draw a ItemStack icon relative to top-left corner of the GUI.
      * @param stack A valid ItemStack.
@@ -171,8 +199,9 @@ public class InventoryBuilder {
      * @param y Starting Y position.
      */
     public void drawIcon(@NotNull ItemStack stack, int x, int y) {
+        if (this.pGui == null) return;
         if (stack.isEmpty()) return;
-        pGui.renderFakeItem(stack, this.posX + x, this.posY + y);
+        this.pGui.renderFakeItem(stack, this.posX + x, this.posY + y);
     }
 
     /**
@@ -184,8 +213,9 @@ public class InventoryBuilder {
      * @param pMouseY Mouse position Y.
      */
     public void drawTooltip(int x, int y, @NotNull Component text, int pMouseX, int pMouseY) {
+        if (this.pGui == null) return;
         if (this.pFont != null && HudUtils.isMouseHoverRect(x, y, pMouseX, pMouseY)) {
-            pGui.renderTooltip(this.pFont, text, pMouseX, pMouseY);
+            this.pGui.renderTooltip(this.pFont, text, pMouseX, pMouseY);
         }
     }
 
@@ -199,8 +229,9 @@ public class InventoryBuilder {
      * @param size Size of the checked rectangle, usually 16.
      */
     public void drawTooltip(int x, int y, @NotNull Component text, int pMouseX, int pMouseY, int size) {
+        if (this.pGui == null) return;
         if (this.pFont != null && HudUtils.isMouseHoverRect(x, y, pMouseX, pMouseY, size)) {
-            pGui.renderTooltip(this.pFont, text, pMouseX, pMouseY);
+            this.pGui.renderTooltip(this.pFont, text, pMouseX, pMouseY);
         }
     }
 
@@ -213,9 +244,10 @@ public class InventoryBuilder {
      * @param pMouseY Mouse position Y.
      */
     public void drawIconWithTooltip(@NotNull ItemStack stack, int x, int y, int pMouseX, int pMouseY) {
+        if (this.pGui == null) return;
         this.drawIcon(stack, x, y);
         if (this.pFont != null && HudUtils.isMouseHoverRect(x, y, pMouseX, pMouseY)) {
-            pGui.renderTooltip(this.pFont, Screen.getTooltipFromItem(Minecraft.getInstance(), stack), stack.getTooltipImage(), pMouseX, pMouseY);
+            this.pGui.renderTooltip(this.pFont, Screen.getTooltipFromItem(Minecraft.getInstance(), stack), stack.getTooltipImage(), pMouseX, pMouseY);
         }
     }
 
@@ -229,9 +261,10 @@ public class InventoryBuilder {
      * @param size Size of the checked rectangle, usually 16.
      */
     public void drawIconWithTooltip(@NotNull ItemStack stack, int x, int y, int pMouseX, int pMouseY, int size) {
+        if (this.pGui == null) return;
         this.drawIcon(stack, x, y);
         if (this.pFont != null && HudUtils.isMouseHoverRect(x, y, pMouseX, pMouseY, size)) {
-            pGui.renderTooltip(this.pFont, Screen.getTooltipFromItem(Minecraft.getInstance(), stack), stack.getTooltipImage(), pMouseX, pMouseY);
+            this.pGui.renderTooltip(this.pFont, Screen.getTooltipFromItem(Minecraft.getInstance(), stack), stack.getTooltipImage(), pMouseX, pMouseY);
         }
     }
 
