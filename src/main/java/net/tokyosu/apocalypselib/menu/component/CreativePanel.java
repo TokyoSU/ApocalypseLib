@@ -134,6 +134,10 @@ public class CreativePanel {
      * Render the GUI, be sure to call this.renderTooltip() after this one !
      */
     public void render(@NotNull GuiGraphics pGui, int pMouseX, int pMouseY, float pPartialTick) {
+        // Render the search box.
+        if (this.searchBox != null)
+            this.searchBox.render(pGui, pMouseX, pMouseY, pPartialTick);
+
         // Render the scroll bar.
         this.scrollableGrid.renderScrollbar(pGui);
 
