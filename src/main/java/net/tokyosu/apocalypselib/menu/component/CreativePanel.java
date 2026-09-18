@@ -150,11 +150,9 @@ public class CreativePanel {
                 if (tab.isActive()) {
                     tab.render(pGui, pMouseX, pMouseY, pPartialTick);
                     var info = tab.getModInfo();
-                    if (info != null) {
-                        var stack = info.iconItem();
-                        if (stack != null && !stack.isEmpty() && HudUtils.isMouseHoverRect(tab.getX() + 5, tab.getY() + 7, pMouseX, pMouseY, 16)) {
-                            pGui.renderTooltip(this.font, Component.literal(info.displayName()), pMouseX, pMouseY);
-                        }
+                    var stack = info.iconItem();
+                    if (stack != null && !stack.isEmpty() && HudUtils.isMouseHoverRect(tab.getX() + 5, tab.getY() + 7, pMouseX, pMouseY, 16)) {
+                        pGui.renderTooltip(this.font, Component.literal(info.displayName()), pMouseX, pMouseY);
                     }
                 }
             }
@@ -223,8 +221,9 @@ public class CreativePanel {
     }
 
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        if (this.searchBox.isFocused()) {
-            return this.searchBox.keyPressed(keyCode, scanCode, modifiers);
+        if (this.searchBox != null && this.searchBox.isFocused()) {
+            this.searchBox.keyPressed(keyCode, scanCode, modifiers);
+            return true;
         }
         return false;
     }
