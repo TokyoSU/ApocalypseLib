@@ -15,7 +15,6 @@ import org.jetbrains.annotations.Nullable;
 /**
  * Define a button that can change it's state from normal and hovered or vice versa.
  */
-@SuppressWarnings("unused")
 public class HoverButton extends ImageButton {
     private final ResourceLocation normalTexture;
     private final ResourceLocation hoveredTexture;
@@ -100,7 +99,6 @@ public class HoverButton extends ImageButton {
     /**
      * Helper to create hover button.
      */
-    @SuppressWarnings("UnusedReturnValue")
     public static class HoverBuilder {
         private @Nullable ResourceLocation normalTexture = null;
         private @Nullable ResourceLocation hoveredTexture = null;

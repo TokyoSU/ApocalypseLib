@@ -8,7 +8,6 @@ import net.minecraft.resources.ResourceLocation;
 import net.tokyosu.apocalypselib.tab.ModTabCollector;
 import org.jetbrains.annotations.NotNull;
 
-@SuppressWarnings("unused")
 public class ModTabButton extends TabButton {
     private ModTabCollector.ModTabInfo modInfo;
 

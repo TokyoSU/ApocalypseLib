@@ -9,6 +9,8 @@ import net.minecraft.util.Mth;
 import net.minecraft.util.Tuple;
 import net.tokyosu.apocalypselib.ApocalypseLib;
 import net.tokyosu.apocalypselib.menu.button.HoverButton;
+import net.tokyosu.apocalypselib.utils.ModUtils;
+
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -20,7 +22,7 @@ import java.util.function.Function;
  * Make a dropdown list using texture as base.
  * @param <T> A structure or class that will be used as value to draw, use the displayFunction argument to draw it correctly.
  */
-@SuppressWarnings({"SpellCheckingInspection", "FieldCanBeLocal", "unused"})
+@SuppressWarnings({"unused"})
 public class DropdownList<T> {
     private static final ResourceLocation DROP_DOWN_TEXTURE = ResourceLocation.fromNamespaceAndPath(ApocalypseLib.MOD_ID, "textures/gui/dropdown.png");
     private final ResourceLocation texture;
@@ -154,7 +156,7 @@ public class DropdownList<T> {
         if (this.selected != null) {
             var textComp = this.displayFunction.apply(this.selected);
             if (textComp != null) {
-                graphics.drawString(Minecraft.getInstance().font, textComp, posX + this.textArea.getX() + 4, posY + this.textArea.getY() + 4, 0xFFFFFF);
+                graphics.drawString(ModUtils.getFont(), textComp, posX + this.textArea.getX() + 4, posY + this.textArea.getY() + 4, 0xFFFFFF);
             }
         }
 
@@ -211,7 +213,7 @@ public class DropdownList<T> {
 
                     // Draw item text
                     Component text = this.displayFunction.apply(value);
-                    graphics.drawString(Minecraft.getInstance().font, text, clipLeft + 4, itemY + (this.itemHeight / 2) - 4, 0xFFFFFF);
+                    graphics.drawString(ModUtils.getFont(), text, clipLeft + 4, itemY + (this.itemHeight / 2) - 4, 0xFFFFFF);
                 }
             }
         }

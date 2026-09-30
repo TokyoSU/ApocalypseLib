@@ -16,7 +16,6 @@ import org.jetbrains.annotations.Nullable;
 /**
  * Define a tab button that can change it's state from normal to selected or vice versa.
  */
-@SuppressWarnings("unused")
 public class TabButton extends ImageButton {
     private final ResourceLocation normalTexture;
     private final ResourceLocation selectedTexture;
@@ -125,7 +124,6 @@ public class TabButton extends ImageButton {
     /**
      * Helper to create tab button.
      */
-    @SuppressWarnings("UnusedReturnValue")
     public static class TabBuilder {
         private @Nullable ResourceLocation normalTexture = null;
         private @Nullable ResourceLocation selectedTexture = null;

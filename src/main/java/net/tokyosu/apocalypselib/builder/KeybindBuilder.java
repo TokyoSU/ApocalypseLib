@@ -10,7 +10,6 @@ import org.jetbrains.annotations.NotNull;
  * You can do new KeybindBuilder().translated().conflict().key().category().build();
  * or instead of translated() use the constructor instead.
  */
-@SuppressWarnings("unused")
 public class KeybindBuilder {
     private KeyConflictContext context = KeyConflictContext.UNIVERSAL;
     private String resource_name;

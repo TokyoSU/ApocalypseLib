@@ -1,6 +1,5 @@
 package net.tokyosu.apocalypselib.menu.component;
 
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
@@ -29,7 +28,6 @@ import java.util.List;
  * Allow to draw a creative menu above another menu.
  * Be sure to call required function !
  */
-@SuppressWarnings("unused")
 public class CreativePanel {
     private static final ResourceLocation EDITOR_TEXTURE = ResourceLocation.fromNamespaceAndPath(ApocalypseLib.MOD_ID, "textures/gui/editor.png"); // 256x256
     private static final ResourceLocation EDITOR_SCROLL_TEXTURE = ResourceLocation.fromNamespaceAndPath(ApocalypseLib.MOD_ID, "textures/gui/editor_scrollbar.png"); // 12x15
@@ -57,7 +55,7 @@ public class CreativePanel {
      * @param maxSearchLength Max character for the search bar (default 50)
      */
     public void init(int screenWidth, int screenHeight, int maxSearchLength) {
-        this.init(Minecraft.getInstance().font, screenWidth, screenHeight, maxSearchLength);
+        this.init(ModUtils.getFont(), screenWidth, screenHeight, maxSearchLength);
     }
 
     /**

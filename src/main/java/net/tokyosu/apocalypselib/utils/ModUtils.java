@@ -1,10 +1,11 @@
 package net.tokyosu.apocalypselib.utils;
 
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Font;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.fml.ModList;
 import org.jetbrains.annotations.NotNull;
 
-@SuppressWarnings("unused")
 public class ModUtils {
     /**
      * Get a mod name.
@@ -41,5 +42,15 @@ public class ModUtils {
      */
     public static boolean isLoaded(@NotNull String namespace) {
         return ModList.get().isLoaded(namespace);
+    }
+    
+    /**
+     * Get the minecraft font.
+     * @apiNote This function have the suppress warning of 'resource', this avoid having this warning each time we use Minecraft.getInstance().font.
+     * @return Minecraft valid font.
+     */
+    @SuppressWarnings("resource")
+    public static @NotNull Font getFont() {
+        return Minecraft.getInstance().font;
     }
 }

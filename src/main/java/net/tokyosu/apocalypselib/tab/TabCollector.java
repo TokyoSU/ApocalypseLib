@@ -9,11 +9,9 @@ import net.tokyosu.apocalypselib.utils.ResourceUtils;
 
 import java.util.*;
 
-@SuppressWarnings("unused")
 public class TabCollector {
     public static final Map<String, LinkedHashSet<ItemStack>> TAB_ITEMS = new HashMap<>();
-
-    @SuppressWarnings("DataFlowIssue")
+    
     public static void collectAllTabs() {
         TAB_ITEMS.clear();
         Set<String> seenItems = new HashSet<>();

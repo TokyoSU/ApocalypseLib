@@ -9,7 +9,6 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-@SuppressWarnings("unused")
 public class ModTabCollector {
     private static final Map<String, ModTabInfo> MOD_TABS = new LinkedHashMap<>();
 

@@ -15,7 +15,6 @@ import java.util.*;
  * Helper to create a scrollable item grid.
  * Be sure to call each function correctly.
  */
-@SuppressWarnings({"unused", "SpellCheckingInspection"})
 public class ScrollableGrid {
     public static final int COLUMNS = 9;
     public static final int ROWS_VISIBLE = 5;

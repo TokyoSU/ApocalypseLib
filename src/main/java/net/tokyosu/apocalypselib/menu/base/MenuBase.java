@@ -9,7 +9,6 @@ import org.jetbrains.annotations.NotNull;
 /**
  * A base menu for custom GUI, which include a player hotbar and inventory slots creation function.
  */
-@SuppressWarnings({"SameParameterValue", "unused"})
 public abstract class MenuBase extends AbstractContainerMenu {
     protected MenuBase(@NotNull MenuType<?> menuType, int containerId) {
         super(menuType, containerId);

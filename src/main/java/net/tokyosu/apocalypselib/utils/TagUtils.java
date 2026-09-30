@@ -12,7 +12,6 @@ import org.jetbrains.annotations.Nullable;
 /**
  * Contains some function for simplifying tag/nbt creating, check etc...
  */
-@SuppressWarnings("unused")
 public class TagUtils {
     /**
      * Process a nbt from a string.
