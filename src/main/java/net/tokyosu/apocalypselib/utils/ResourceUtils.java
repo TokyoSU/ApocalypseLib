@@ -36,4 +36,14 @@ public class ResourceUtils {
     public static @Nullable ResourceLocation getResourcebyItem(@NotNull Item item) {
         return ForgeRegistries.ITEMS.getKey(item);
     }
+    
+    /** Parse a required resource ID, using the supplied namespace when no colon is present. */
+    public static ResourceLocation parseRequired(String value, String defaultNamespace) {
+        if (value == null || value.isBlank()) throw new IllegalArgumentException("Resource ID cannot be empty");
+        String normalized = value.trim();
+        int separator = normalized.indexOf(':');
+        return separator >= 0
+                ? ResourceLocation.fromNamespaceAndPath(normalized.substring(0, separator), normalized.substring(separator + 1))
+                : ResourceLocation.fromNamespaceAndPath(defaultNamespace, normalized);
+    }
 }

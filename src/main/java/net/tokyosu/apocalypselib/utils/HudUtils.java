@@ -3,7 +3,6 @@ package net.tokyosu.apocalypselib.utils;
 /**
  * Contains some function to help with UI.
  */
-@SuppressWarnings("unused")
 public class HudUtils {
     /**
      * Check in a rectangle way if a mouse is over it.
@@ -28,5 +27,9 @@ public class HudUtils {
      */
     public static boolean isMouseHoverRect(int x, int y, int mouseX, int mouseY, int pixelSize) {
         return mouseX >= x && mouseX <= x + pixelSize && mouseY >= y && mouseY <= y + pixelSize;
+    }
+    /** Rectangular hit test with exclusive right/bottom edges. Existing square overloads remain inclusive. */
+    public static boolean contains(double mouseX, double mouseY, int x, int y, int width, int height) {
+        return mouseX >= x && mouseX < x + width && mouseY >= y && mouseY < y + height;
     }
 }

@@ -91,6 +91,9 @@ dependencies {
     minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
     // Apply Mixin AP
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
+    
+    // Isolated adapters in compat.jei are loaded only by consumers' JEI plugins.
+    compileOnly fg.deobf("curse.maven:jei-238222:8778011")
 }
 
 // This block of code expands all declared replace properties in the specified resource targets.
@@ -134,6 +137,7 @@ tasks.named('jar', Jar).configure {
 publishing {
     publications {
         register('mavenJava', MavenPublication) {
+            artifactId = mod_id
             artifact jar
         }
     }

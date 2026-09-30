@@ -5,7 +5,6 @@ import net.minecraft.util.FastColor;
 import net.minecraft.world.item.Rarity;
 import org.jetbrains.annotations.NotNull;
 
-@SuppressWarnings("unused")
 public class ColorUtils {
     /**
      * Get an ARGB packed color from Rarity.
@@ -133,5 +132,16 @@ public class ColorUtils {
      */
     public static float getAlphaFloat(int argb) {
         return (float)FastColor.ARGB32.alpha(argb) / 255.0f;
+    }
+    /** Replace alpha, rounding to the nearest byte and clamping to 0..255. */
+    public static int withAlpha(int rgb, float alpha) {
+        int a = Math.max(0, Math.min(255, Math.round(alpha * 255.0F)));
+        return (a << 24) | (rgb & 0xFFFFFF);
+    }
+
+    /** RGB rarity color with an explicit fallback; alpha is deliberately omitted. */
+    public static int getRGBFromRarity(Rarity rarity, int fallback) {
+        var color = RarityUtils.getStyleByRarity(rarity).getColor();
+        return (color == null ? fallback : color.getValue()) & 0xFFFFFF;
     }
 }

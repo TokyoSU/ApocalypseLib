@@ -22,7 +22,7 @@ public class TagUtils {
         // For now, parse nbt into CompoundTag else return.
         CompoundTag nbtTag;
         try {
-            nbtTag = TagParser.parseTag(nbt);
+            nbtTag = parseNBT(nbt);
         } catch (CommandSyntaxException e) {
             ApocalypseLib.LOGGER.error("Failed to create an CompoundTag, Error: {}, NBT used: {}", e.getMessage(), nbt);
             return null;
@@ -41,5 +41,10 @@ public class TagUtils {
         // Check if the stack have nbt tag, else false.
         if (!stack.hasTag()) return false;
         return NbtUtils.compareNbt(nbtRequired, stack.getTag(), true);
+    }
+    
+    /** Strict parsing for callers that need to report or propagate syntax failures. */
+    public static CompoundTag parseNBT(String nbt) throws CommandSyntaxException {
+        return TagParser.parseTag(nbt);
     }
 }
